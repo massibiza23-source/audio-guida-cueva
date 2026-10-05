@@ -1,0 +1,10 @@
+{
+  "name": "Audioguía Cueva de Can Marçà",
+  "description": "Audioguía interactiva multilingüe para la Cueva de Can Marçà con visor de reconocimiento de zonas por cámara, beacons y plano de la cueva.",
+  "requestFramePermissions": [
+    "camera"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
