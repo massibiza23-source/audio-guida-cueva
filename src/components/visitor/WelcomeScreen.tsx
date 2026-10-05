@@ -2,6 +2,7 @@ import React from 'react';
 import { Compass, Radio, QrCode, WifiOff, Sparkles, ArrowRight, ShieldCheck, MapPin } from 'lucide-react';
 import { LanguageCode } from '../../types';
 import { SUPPORTED_LANGUAGES } from '../../data/seedData';
+import { PWAInstallButton } from '../common/PWAInstallButton';
 
 interface WelcomeScreenProps {
   currentLanguage: LanguageCode;
@@ -164,9 +165,10 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
         {/* Cave Hero Card */}
         <div className="relative rounded-3xl overflow-hidden border border-stone-800 shadow-2xl group">
           <img
-            src="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=1000&q=80"
-            alt="Cueva de Can Marçà interior"
-            className="w-full h-56 sm:h-64 object-cover brightness-90 group-hover:scale-105 transition-transform duration-700"
+            src="/src/assets/images/can_marca_terrace_1791196483951.jpg"
+            alt="Cueva de Can Marçà - Vistas al Puerto de San Miguel y Sa Ferradura"
+            referrerPolicy="no-referrer"
+            className="w-full h-56 sm:h-64 object-cover brightness-95 group-hover:scale-105 transition-transform duration-700"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-stone-950 via-stone-950/40 to-transparent flex flex-col justify-end p-5">
             <div className="inline-flex items-center space-x-2 bg-stone-900/90 border border-amber-500/30 px-3 py-1 rounded-full w-max text-amber-400 text-xs font-semibold backdrop-blur-sm mb-2">
@@ -227,6 +229,9 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
             Cambiar
           </button>
         </div>
+
+        {/* PWA Home Screen Install Banner */}
+        <PWAInstallButton variant="card" />
 
         {/* Offline Status Card */}
         {isOfflineReady ? (

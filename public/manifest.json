@@ -1,0 +1,40 @@
+{
+  "id": "/",
+  "name": "Audioguía Cueva de Can Marçà",
+  "short_name": "Can Marçà",
+  "description": "Audioguía inteligente oficial para la Cueva de Can Marçà, Ibiza. Detección automática por Beacon, GPS y modo offline.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "theme_color": "#0c0a09",
+  "background_color": "#0c0a09",
+  "categories": ["travel", "education", "lifestyle"],
+  "lang": "es",
+  "icons": [
+    {
+      "src": "/pwa-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/pwa-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/pwa-maskable-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icon.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

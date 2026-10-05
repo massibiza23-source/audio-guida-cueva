@@ -37,7 +37,7 @@ const RAW_POINTS: TourPoint[] = [
       },
     },
     visual: {
-      image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80',
+      image: '/src/assets/images/can_marca_terrace_1791196483951.jpg',
       caption: 'Vistas panorámicas a la bahía del Puerto de San Miguel y Torre d’en Mular',
     },
     keywords: ['terraza', 'paisaje', 'puerto san miguel', 'torre', 'lagartija pitiusa'],

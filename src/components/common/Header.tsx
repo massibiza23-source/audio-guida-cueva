@@ -2,6 +2,7 @@ import React from 'react';
 import { Volume2, VolumeX, QrCode, Globe, Shield, Sparkles, Wifi, WifiOff, Camera } from 'lucide-react';
 import { LanguageCode } from '../../types';
 import { SUPPORTED_LANGUAGES } from '../../data/seedData';
+import { PWAInstallButton } from './PWAInstallButton';
 
 interface HeaderProps {
   currentLanguage: LanguageCode;
@@ -51,6 +52,9 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* Action Controls */}
         <div className="flex items-center space-x-1.5">
+          {/* PWA Home Screen Install Button */}
+          <PWAInstallButton variant="header" />
+
           {/* Offline Status */}
           <div
             title={isOffline ? 'Modo sin conexión' : 'Conectado'}

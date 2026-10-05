@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <!-- Background Gradient (full bleed, no border radius for maskable) -->
+    <linearGradient id="bgGradMask" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1c1917" />
+      <stop offset="50%" stop-color="#0c0a09" />
+      <stop offset="100%" stop-color="#080706" />
+    </linearGradient>
+
+    <!-- Amber Gold Glow -->
+    <linearGradient id="goldGradMask" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fbbf24" />
+      <stop offset="50%" stop-color="#f59e0b" />
+      <stop offset="100%" stop-color="#d97706" />
+    </linearGradient>
+
+    <!-- Emerald Cave Glow for subterranean water -->
+    <linearGradient id="waterGradMask" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#34d399" />
+      <stop offset="100%" stop-color="#059669" />
+    </linearGradient>
+
+    <radialGradient id="haloMask" cx="50%" cy="45%" r="40%">
+      <stop offset="0%" stop-color="#f59e0b" stop-opacity="0.3" />
+      <stop offset="70%" stop-color="#f59e0b" stop-opacity="0.05" />
+      <stop offset="100%" stop-color="#f59e0b" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+
+  <!-- Full-bleed background for Android maskable icon cropping -->
+  <rect width="512" height="512" fill="url(#bgGradMask)" />
+
+  <!-- Inner safe-zone container (scaled to 82% to fit Android safe zone circle) -->
+  <g transform="translate(256, 256) scale(0.82) translate(-256, -256)">
+    <!-- Soft Ambient Glow -->
+    <circle cx="256" cy="240" r="180" fill="url(#haloMask)" />
+
+    <!-- Subterranean Acoustic Soundwaves / Beacon Rings -->
+    <circle cx="256" cy="240" r="145" fill="none" stroke="#f59e0b" stroke-width="3" stroke-dasharray="14 10" stroke-opacity="0.25" />
+    <circle cx="256" cy="240" r="180" fill="none" stroke="#f59e0b" stroke-width="2" stroke-dasharray="8 8" stroke-opacity="0.15" />
+
+    <!-- Stylized Cave Vault Arch & Stalactites Formations -->
+    <g fill="url(#goldGradMask)">
+      <!-- Central Stalactite / Headphone Arch Motif -->
+      <path d="M160 270 C160 170, 352 170, 352 270 C352 290, 336 295, 328 275 C316 200, 196 200, 184 275 C176 295, 160 290, 160 270 Z" />
+
+      <!-- Sharp Karstic Stalactites -->
+      <polygon points="256,150 246,245 256,265 266,245" />
+      <polygon points="216,165 210,225 216,238 222,225" />
+      <polygon points="296,165 290,225 296,238 302,225" />
+    </g>
+
+    <!-- Glowing Cave Water Ripple / Soundwave Base -->
+    <path d="M170 330 Q213 318, 256 318 T342 330" fill="none" stroke="url(#goldGradMask)" stroke-width="5" stroke-linecap="round" />
+    <path d="M195 348 Q225 340, 256 340 T317 348" fill="none" stroke="url(#waterGradMask)" stroke-width="4" stroke-linecap="round" />
+    <path d="M220 364 Q238 358, 256 358 T292 364" fill="none" stroke="#34d399" stroke-width="3" stroke-linecap="round" opacity="0.7" />
+
+    <!-- Headphones / Audio Guide Cups -->
+    <rect x="145" y="255" width="28" height="52" rx="14" fill="url(#goldGradMask)" />
+    <rect x="339" y="255" width="28" height="52" rx="14" fill="url(#goldGradMask)" />
+
+    <!-- CAN MARÇÀ Branding Text -->
+    <text x="256" y="415" text-anchor="middle" font-family="'Cinzel', 'Times New Roman', serif" font-weight="700" font-size="34" letter-spacing="6" fill="#f5f5f4">CAN MARÇÀ</text>
+    <text x="256" y="445" text-anchor="middle" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-weight="600" font-size="16" letter-spacing="4" fill="#fbbf24" opacity="0.9">IBIZA • AUDIO GUIDE</text>
+  </g>
+</svg>
