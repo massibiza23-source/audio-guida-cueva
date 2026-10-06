@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { X, Play, Pause, Radio, QrCode, Compass, Volume2, FileText, Tag, ChevronLeft, ChevronRight } from 'lucide-react';
+import { X, Play, Pause, Radio, QrCode, Compass, Volume2, FileText, Tag, ChevronLeft, ChevronRight, Sparkles } from 'lucide-react';
 import { TourPoint, LanguageCode, AudioPlaybackState } from '../../types';
 import { UI_TRANSLATIONS } from '../../data/uiTranslations';
+import { KIDS_TOUR_DATA } from '../../data/kidsAudioData';
+import { audioEngine } from '../../services/audioEngine';
 
 interface PointDetailModalProps {
   point: TourPoint | null;
@@ -37,6 +39,9 @@ export const PointDetailModal: React.FC<PointDetailModalProps> = ({
   const translation = point.translations[language] || point.translations.es;
   const isPlayingThis = playbackState.currentPointId === point.id && playbackState.isPlaying;
   const t = UI_TRANSLATIONS[language] || UI_TRANSLATIONS.es;
+
+  const kidData = KIDS_TOUR_DATA[point.id];
+  const kidTranslation = (kidData && (kidData[language] || kidData['es'])) || null;
 
   const allPhotos = [point.visual.image, ...(point.visual.gallery || [])].filter(Boolean);
   const activePhoto = allPhotos[selectedPhotoIndex] || point.visual.image;
@@ -129,27 +134,94 @@ export const PointDetailModal: React.FC<PointDetailModalProps> = ({
               </div>
             </div>
 
-            <button
-              onClick={() => onPlayPoint(point)}
-              className={`py-2 px-4 rounded-xl font-bold text-xs flex items-center space-x-1.5 transition-all ${
-                isPlayingThis
-                  ? 'bg-amber-500 text-stone-950 shadow-md shadow-amber-500/20'
-                  : 'bg-stone-800 hover:bg-stone-700 text-amber-400 border border-stone-700'
+            <div className="flex items-center space-x-1.5">
+              <button
+                onClick={() => audioEngine.toggleKidsMode(point, language)}
+                title={playbackState.isKidsMode ? 'Voz Miki activa (clic para volver a adultos)' : 'Activar voz Miki'}
+                className={`py-2 px-3 rounded-xl font-bold text-xs flex items-center space-x-1 transition-all ${
+                  playbackState.isKidsMode
+                    ? 'bg-yellow-400 text-stone-950 shadow-md shadow-yellow-500/20 ring-1 ring-yellow-400/50'
+                    : 'bg-stone-800 hover:bg-stone-750 text-stone-300 border border-stone-700'
+                }`}
+              >
+                <span>🐭</span>
+                <span className="text-[11px]">{playbackState.isKidsMode ? 'Voz Miki' : 'Niños'}</span>
+              </button>
+
+              <button
+                onClick={() => onPlayPoint(point)}
+                className={`py-2 px-4 rounded-xl font-bold text-xs flex items-center space-x-1.5 transition-all ${
+                  isPlayingThis
+                    ? 'bg-amber-500 text-stone-950 shadow-md shadow-amber-500/20'
+                    : 'bg-stone-800 hover:bg-stone-700 text-amber-400 border border-stone-700'
+                }`}
+              >
+                {isPlayingThis ? (
+                  <>
+                    <Pause className="w-4 h-4 fill-current" />
+                    <span>{t.pauseBtn}</span>
+                  </>
+                ) : (
+                  <>
+                    <Play className="w-4 h-4 fill-current ml-0.5" />
+                    <span>{t.playBtn}</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+
+          {/* Kids Mode Story & Challenge Box */}
+          {kidTranslation && (
+            <div
+              className={`p-4 rounded-2xl border transition-all space-y-2.5 ${
+                playbackState.isKidsMode
+                  ? 'bg-yellow-950/25 border-yellow-400/50 shadow-md shadow-yellow-500/10'
+                  : 'bg-stone-950/60 border-stone-800'
               }`}
             >
-              {isPlayingThis ? (
-                <>
-                  <Pause className="w-4 h-4 fill-current" />
-                  <span>{t.pauseBtn}</span>
-                </>
-              ) : (
-                <>
-                  <Play className="w-4 h-4 fill-current ml-0.5" />
-                  <span>{t.playBtn}</span>
-                </>
-              )}
-            </button>
-          </div>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="text-xl">🐭</span>
+                  <div>
+                    <h5 className="text-xs font-bold text-yellow-300">
+                      {kidTranslation.title}
+                    </h5>
+                    <p className="text-[10px] text-yellow-400/80">
+                      Narración infantil con voz estilo Miki
+                    </p>
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => audioEngine.toggleKidsMode(point, language)}
+                  className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all ${
+                    playbackState.isKidsMode
+                      ? 'bg-yellow-400 text-stone-950 shadow-sm'
+                      : 'bg-stone-800 text-yellow-300 border border-stone-700 hover:bg-stone-700'
+                  }`}
+                >
+                  {playbackState.isKidsMode ? 'Escuchando a Miki' : 'Escuchar a Miki'}
+                </button>
+              </div>
+
+              <div className="space-y-2 text-xs leading-relaxed text-stone-200">
+                <p className="bg-yellow-950/30 p-2.5 rounded-xl border border-yellow-800/20 text-yellow-100">
+                  💬 <span className="italic font-medium">"{kidTranslation.audioScript}"</span>
+                </p>
+
+                {kidTranslation.challenge && (
+                  <div className="flex items-start gap-2 bg-stone-900/80 p-2.5 rounded-xl border border-stone-800 text-[11px] text-amber-300">
+                    <Sparkles className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+                    <div>
+                      <strong className="text-amber-200">Reto de Miki para exploradores: </strong>
+                      <span>{kidTranslation.challenge}</span>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
 
           {/* Description Section */}
           <div className="space-y-1.5">

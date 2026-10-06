@@ -226,6 +226,8 @@ export default function App() {
         ambientSoundActive={playbackState.ambientCaveSound}
         onToggleAmbientSound={() => audioEngine.toggleAmbientCaveSound()}
         isOffline={isOffline}
+        isKidsMode={playbackState.isKidsMode}
+        onToggleKidsMode={() => audioEngine.toggleKidsMode(currentPoint, language)}
       />
 
       {/* Main View Router */}
@@ -246,6 +248,8 @@ export default function App() {
                 onStartTour={handleStartTourFromWelcome}
                 isOfflineReady={StorageService.isOfflinePackageReady()}
                 onOpenDownloadScreen={() => setCurrentScreen('DOWNLOAD')}
+                isKidsMode={playbackState.isKidsMode}
+                onSetKidsMode={(val: boolean) => audioEngine.setKidsMode(val, currentPoint, language)}
               />
             )}
 
@@ -302,6 +306,7 @@ export default function App() {
               <TourEndScreen
                 language={language}
                 totalPoints={points.length}
+                isKidsMode={playbackState.isKidsMode}
                 onRestartTour={() => {
                   setCurrentScreen('ROUTE');
                   const p1 = points.find(p => p.id === 'CM-01') || points[0];

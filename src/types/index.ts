@@ -102,6 +102,7 @@ export interface AudioPlaybackState {
   autoplayEnabled: boolean;
   confirmingCountdown: number; // seconds remaining in 2s detection confirmation
   cooldownRemaining: number; // seconds remaining in 20s cooldown
+  isKidsMode: boolean; // Mickey Mouse styled cartoon voice and kid adventure script
 }
 
 export type VisitorScreen =
@@ -125,6 +126,7 @@ export interface VisitorProgress {
     bluetooth: boolean;
     location: boolean;
   };
+  isKidsMode?: boolean;
 }
 
 export interface AnalyticsEvent {
@@ -140,7 +142,8 @@ export interface AnalyticsEvent {
     | 'language_selected'
     | 'tour_completed'
     | 'download_completed'
-    | 'activation_error';
+    | 'activation_error'
+    | 'kids_mode_toggled';
   timestamp: number;
   pointId?: string;
   activationMethod?: ActivationMethod;

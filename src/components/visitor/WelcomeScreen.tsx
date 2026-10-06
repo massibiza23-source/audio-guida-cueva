@@ -2,7 +2,6 @@ import React from 'react';
 import { Compass, Radio, QrCode, WifiOff, Sparkles, ArrowRight, ShieldCheck, MapPin } from 'lucide-react';
 import { LanguageCode } from '../../types';
 import { SUPPORTED_LANGUAGES } from '../../data/seedData';
-import { PWAInstallButton } from '../common/PWAInstallButton';
 
 interface WelcomeScreenProps {
   currentLanguage: LanguageCode;
@@ -10,6 +9,8 @@ interface WelcomeScreenProps {
   onStartTour: () => void;
   isOfflineReady: boolean;
   onOpenDownloadScreen: () => void;
+  isKidsMode?: boolean;
+  onSetKidsMode?: (val: boolean) => void;
 }
 
 export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
@@ -18,6 +19,8 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
   onStartTour,
   isOfflineReady,
   onOpenDownloadScreen,
+  isKidsMode = false,
+  onSetKidsMode,
 }) => {
   const currentLangObj = SUPPORTED_LANGUAGES.find(l => l.code === currentLanguage) || SUPPORTED_LANGUAGES[0];
 
@@ -230,8 +233,57 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
           </button>
         </div>
 
-        {/* PWA Home Screen Install Banner */}
-        <PWAInstallButton variant="card" />
+        {/* Tour Experience Mode Selector: Adultos vs Niños (Voz Miki) */}
+        {onSetKidsMode && (
+          <div className="p-3.5 rounded-2xl bg-stone-900/90 border border-stone-800 space-y-2.5 shadow-lg">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-semibold text-stone-300">Tipo de Narración</span>
+              {isKidsMode && (
+                <span className="text-[10px] bg-yellow-400/20 text-yellow-300 border border-yellow-400/40 px-2 py-0.5 rounded-full font-bold animate-pulse">
+                  ¡Voz Miki activada!
+                </span>
+              )}
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                onClick={() => onSetKidsMode(false)}
+                className={`p-2.5 rounded-xl border flex items-center space-x-2.5 transition-all text-left ${
+                  !isKidsMode
+                    ? 'bg-amber-500/15 border-amber-500/50 text-amber-300 ring-1 ring-amber-500/30'
+                    : 'bg-stone-950/60 border-stone-800 text-stone-400 hover:text-stone-200'
+                }`}
+              >
+                <div className="text-xl">🎓</div>
+                <div className="min-w-0">
+                  <p className="text-xs font-bold truncate">Modo General</p>
+                  <p className="text-[10px] text-stone-400">Historia y geología</p>
+                </div>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => onSetKidsMode(true)}
+                className={`p-2.5 rounded-xl border flex items-center space-x-2.5 transition-all text-left ${
+                  isKidsMode
+                    ? 'bg-gradient-to-r from-yellow-400/20 to-amber-500/20 border-yellow-400 text-yellow-200 ring-2 ring-yellow-400/40 shadow-md shadow-yellow-500/10'
+                    : 'bg-stone-950/60 border-stone-800 text-stone-400 hover:text-stone-200'
+                }`}
+              >
+                <div className="text-xl animate-bounce">🐭</div>
+                <div className="min-w-0">
+                  <p className="text-xs font-bold truncate">Modo Niños</p>
+                  <p className="text-[10px] text-yellow-400/90 font-medium">Voz estilo Miki</p>
+                </div>
+              </button>
+            </div>
+            {isKidsMode && (
+              <p className="text-[11px] text-yellow-300/85 leading-relaxed bg-yellow-950/30 border border-yellow-800/30 rounded-xl p-2">
+                🐭 <strong>¡Aventura con Miki!</strong> Narración alegre y aguda para niños con misterios piratas, fósiles de animales y cascadas mágicas.
+              </p>
+            )}
+          </div>
+        )}
 
         {/* Offline Status Card */}
         {isOfflineReady ? (

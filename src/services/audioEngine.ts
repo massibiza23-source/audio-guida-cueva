@@ -1,5 +1,6 @@
 import { AudioPlaybackState, AudioEngineStatus, LanguageCode, TourPoint } from '../types';
 import { StorageService } from './storageService';
+import { KIDS_TOUR_DATA } from '../data/kidsAudioData';
 
 export type AudioStateListener = (state: AudioPlaybackState) => void;
 
@@ -16,6 +17,7 @@ class AudioEngine {
     autoplayEnabled: true,
     confirmingCountdown: 0,
     cooldownRemaining: 0,
+    isKidsMode: typeof window !== 'undefined' ? StorageService.isKidsMode() : false,
   };
 
   private listeners: Set<AudioStateListener> = new Set();
@@ -143,19 +145,52 @@ class AudioEngine {
   }
 
   /**
+   * Set or toggle Kids Mode (narrated by Miki with high-pitched cartoon voice)
+   */
+  public setKidsMode(enabled: boolean, currentPoint?: TourPoint | null, lang: LanguageCode = 'es') {
+    this.state.isKidsMode = enabled;
+    StorageService.setKidsMode(enabled);
+    if (enabled) {
+      this.playCartoonFeedback();
+    }
+    this.notify();
+
+    // If a point is currently playing, smoothly transition to the selected mode
+    if (this.state.isPlaying && currentPoint) {
+      this.playPoint(currentPoint, lang, true);
+    }
+  }
+
+  public toggleKidsMode(currentPoint?: TourPoint | null, lang: LanguageCode = 'es') {
+    this.setKidsMode(!this.state.isKidsMode, currentPoint, lang);
+  }
+
+  /**
    * Play or restart a point narration (manual or confirmed auto)
    */
   public playPoint(point: TourPoint, lang: LanguageCode, manual = true) {
     this.clearTimers();
 
-    const translation = point.translations[lang] || point.translations['es'];
-    const textToNarrate = `${translation.title}. ${translation.subtitle}. ${translation.description}`;
+    let textToNarrate = '';
+    if (this.state.isKidsMode) {
+      const kidData = KIDS_TOUR_DATA[point.id];
+      const kidTranslation = (kidData && (kidData[lang] || kidData['es'])) || null;
+      if (kidTranslation) {
+        textToNarrate = kidTranslation.audioScript;
+      } else {
+        const translation = point.translations[lang] || point.translations['es'];
+        textToNarrate = `¡Hola amiguitos! ¡Jaja! ¡Soy Miki! ${translation.title}. ${translation.subtitle}. ${translation.description}`;
+      }
+    } else {
+      const translation = point.translations[lang] || point.translations['es'];
+      textToNarrate = `${translation.title}. ${translation.subtitle}. ${translation.description}`;
+    }
 
     this.state.currentPointId = point.id;
     this.state.status = 'PLAYING';
     this.state.isPlaying = true;
     this.state.currentTime = 0;
-    this.state.duration = point.durationSeconds || Math.max(25, Math.ceil(textToNarrate.length / 15));
+    this.state.duration = point.durationSeconds || Math.max(25, Math.ceil(textToNarrate.length / 14));
     this.notify();
 
     // Mark visited in storage and track analytics
@@ -166,8 +201,10 @@ class AudioEngine {
       activationMethod: manual ? 'manual' : point.activation.primary,
     });
 
-    // Check if custom audioUrl is present
-    if (translation.audioUrl && translation.audioUrl.trim().length > 0) {
+    const translation = point.translations[lang] || point.translations['es'];
+
+    // If adult mode has custom audioUrl, use it; in kids mode, use the tailored Miki synthesis
+    if (!this.state.isKidsMode && translation.audioUrl && translation.audioUrl.trim().length > 0) {
       if (this.audioEl) {
         this.audioEl.src = translation.audioUrl;
         this.audioEl.volume = this.state.volume;
@@ -177,7 +214,7 @@ class AudioEngine {
         });
       }
     } else {
-      // Use high quality Web Speech API
+      // Use high quality Web Speech API styled with cartoon/standard pitch
       this.speakSyntheticText(textToNarrate, lang);
     }
 
@@ -185,7 +222,43 @@ class AudioEngine {
     this.startProgressClock();
   }
 
+  /**
+   * Playful cartoon Disney/Mickey entrance chime
+   */
+  public playCartoonFeedback() {
+    try {
+      if (typeof window === 'undefined') return;
+      const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+      if (!AudioCtx) return;
+      const ctx = new AudioCtx();
+      if (ctx.state === 'suspended') {
+        ctx.resume();
+      }
+      const now = ctx.currentTime;
+      // Play 3 lively cartoon notes: C6 -> E6 -> G6 with playful bouncy envelopes
+      const notes = [1046.5, 1318.5, 1567.98];
+      notes.forEach((freq, idx) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(freq, now + idx * 0.09);
+        gain.gain.setValueAtTime(0.15, now + idx * 0.09);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.09 + 0.15);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now + idx * 0.09);
+        osc.stop(now + idx * 0.09 + 0.16);
+      });
+    } catch {
+      // AudioContext not supported
+    }
+  }
+
   private playChimeFeedback() {
+    if (this.state.isKidsMode) {
+      this.playCartoonFeedback();
+      return;
+    }
     try {
       if (typeof window === 'undefined') return;
       const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
@@ -272,7 +345,16 @@ class AudioEngine {
     const utterance = new SpeechSynthesisUtterance(text);
     this.speechUtterance = utterance;
     utterance.lang = matchingVoice?.lang || targetLangCode;
-    utterance.rate = this.state.playbackRate;
+
+    // Apply high-pitch Mickey Mouse style character voice for kids
+    if (this.state.isKidsMode) {
+      utterance.pitch = 1.78; // Squeaky, bright, enthusiastic cartoon voice
+      utterance.rate = 1.10; // Bouncy, animated storytelling pace
+    } else {
+      utterance.pitch = 1.0;
+      utterance.rate = this.state.playbackRate;
+    }
+
     utterance.volume = this.state.volume;
 
     if (matchingVoice) {

@@ -17,6 +17,7 @@ import {
 import { TourPoint, AudioPlaybackState, LanguageCode } from '../../types';
 import { audioEngine } from '../../services/audioEngine';
 import { UI_TRANSLATIONS } from '../../data/uiTranslations';
+import { KIDS_TOUR_DATA } from '../../data/kidsAudioData';
 import { Camera } from 'lucide-react';
 
 interface AudioPlayerSheetProps {
@@ -70,6 +71,10 @@ export const AudioPlayerSheet: React.FC<AudioPlayerSheetProps> = ({
   }
 
   const translation = currentPoint.translations[language] || currentPoint.translations.es;
+  const kidData = KIDS_TOUR_DATA[currentPoint.id];
+  const kidTranslation = (kidData && (kidData[language] || kidData['es'])) || null;
+  const displayTitle = playbackState.isKidsMode && kidTranslation ? kidTranslation.title : translation.title;
+  const displaySubtitle = playbackState.isKidsMode && kidTranslation ? kidTranslation.subtitle : translation.subtitle;
 
   const formatTime = (secs: number) => {
     const m = Math.floor(secs / 60);
@@ -138,19 +143,50 @@ export const AudioPlayerSheet: React.FC<AudioPlayerSheetProps> = ({
                 <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-400 border border-amber-500/30">
                   {currentPoint.id}
                 </span>
-                <span className="text-[11px] text-stone-400 truncate">
-                  {t.stationOf(currentPoint.order, 10)}
-                </span>
+                {playbackState.isKidsMode ? (
+                  <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-yellow-400/20 text-yellow-300 border border-yellow-400/40 flex items-center gap-1 animate-pulse">
+                    <span>🐭</span>
+                    <span>Voz Miki</span>
+                  </span>
+                ) : (
+                  <span className="text-[11px] text-stone-400 truncate">
+                    {t.stationOf(currentPoint.order, 10)}
+                  </span>
+                )}
               </div>
-              <h3 className="text-sm font-bold text-stone-100 truncate group-hover:text-amber-400 transition-colors">
-                {translation.title}
+              <h3 className={`text-sm font-bold truncate transition-colors ${
+                playbackState.isKidsMode
+                  ? 'text-yellow-200 group-hover:text-yellow-300 font-serif'
+                  : 'text-stone-100 group-hover:text-amber-400'
+              }`}>
+                {displayTitle}
               </h3>
-              <p className="text-[11px] text-stone-400 truncate">{translation.subtitle}</p>
+              <p className="text-[11px] text-stone-400 truncate">{displaySubtitle}</p>
             </div>
           </div>
 
           {/* Quick Buttons */}
           <div className="flex items-center space-x-1 shrink-0">
+            {/* Kids Mode Toggle */}
+            <button
+              onClick={() => audioEngine.toggleKidsMode(currentPoint, language)}
+              title={
+                playbackState.isKidsMode
+                  ? 'Voz Miki para Niños activa (clic para volver a modo adultos)'
+                  : 'Activar modo niños con voz estilo Miki'
+              }
+              className={`px-2 py-1 rounded-lg border text-xs font-bold flex items-center gap-1 transition-all ${
+                playbackState.isKidsMode
+                  ? 'bg-yellow-400 text-stone-950 border-yellow-300 shadow-md shadow-yellow-500/25 ring-1 ring-yellow-400/50'
+                  : 'bg-stone-900 border-stone-800 text-stone-400 hover:text-yellow-400 hover:border-yellow-500/30'
+              }`}
+            >
+              <span className="text-sm leading-none">🐭</span>
+              <span className="text-[10px] hidden sm:inline">
+                {playbackState.isKidsMode ? 'Voz Miki' : 'Niños'}
+              </span>
+            </button>
+
             {/* Speed Toggle */}
             <button
               onClick={handleSpeedCycle}

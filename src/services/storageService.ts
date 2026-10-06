@@ -113,8 +113,20 @@ export class StorageService {
         bluetooth: false,
         location: false,
       },
+      isKidsMode: false,
     };
     return defaultProgress;
+  }
+
+  static isKidsMode(): boolean {
+    return !!this.getVisitorProgress().isKidsMode;
+  }
+
+  static setKidsMode(enabled: boolean): void {
+    const progress = this.getVisitorProgress();
+    progress.isKidsMode = enabled;
+    this.saveVisitorProgress(progress);
+    this.trackEvent('kids_mode_toggled', { metadata: { enabled } });
   }
 
   static saveVisitorProgress(progress: VisitorProgress): void {

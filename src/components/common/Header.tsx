@@ -14,6 +14,8 @@ interface HeaderProps {
   ambientSoundActive: boolean;
   onToggleAmbientSound: () => void;
   isOffline: boolean;
+  isKidsMode?: boolean;
+  onToggleKidsMode?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -26,6 +28,8 @@ export const Header: React.FC<HeaderProps> = ({
   ambientSoundActive,
   onToggleAmbientSound,
   isOffline,
+  isKidsMode = false,
+  onToggleKidsMode,
 }) => {
   const currentLangObj = SUPPORTED_LANGUAGES.find(l => l.code === currentLanguage) || SUPPORTED_LANGUAGES[0];
 
@@ -52,6 +56,29 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* Action Controls */}
         <div className="flex items-center space-x-1.5">
+          {/* Kids Mode Toggle (Miki Cartoon Voice) */}
+          {onToggleKidsMode && (
+            <button
+              onClick={onToggleKidsMode}
+              aria-label="Modo Niños con voz estilo Miki"
+              title={
+                isKidsMode
+                  ? 'Voz Miki para Niños activada (clic para volver a modo adultos)'
+                  : 'Activar modo niños con voz estilo Miki'
+              }
+              className={`px-2 py-1.5 rounded-lg border text-xs font-semibold flex items-center gap-1.5 transition-all ${
+                isKidsMode
+                  ? 'bg-gradient-to-r from-amber-500 to-yellow-400 text-stone-950 border-yellow-300 shadow-md shadow-amber-500/25 ring-1 ring-yellow-400/50 scale-105'
+                  : 'bg-stone-900 text-stone-300 border-stone-800 hover:text-amber-300 hover:border-amber-500/30'
+              }`}
+            >
+              <span className="text-sm leading-none">🐭</span>
+              <span className="text-[11px] font-bold hidden sm:inline">
+                {isKidsMode ? 'Voz Miki' : 'Niños'}
+              </span>
+            </button>
+          )}
+
           {/* PWA Home Screen Install Button */}
           <PWAInstallButton variant="header" />
 

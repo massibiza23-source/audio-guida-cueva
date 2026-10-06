@@ -14,6 +14,8 @@ import {
 } from 'lucide-react';
 import { TourPoint, LanguageCode, AudioPlaybackState } from '../../types';
 import { UI_TRANSLATIONS } from '../../data/uiTranslations';
+import { KIDS_TOUR_DATA } from '../../data/kidsAudioData';
+import { audioEngine } from '../../services/audioEngine';
 import { Camera, Eye } from 'lucide-react';
 
 interface RouteOverviewProps {
@@ -119,6 +121,53 @@ export const RouteOverview: React.FC<RouteOverviewProps> = ({
         </div>
       </div>
 
+      {/* Kids Mode Interactive Banner */}
+      <div
+        className={`p-3 rounded-2xl border flex items-center justify-between gap-3 shadow-md transition-all ${
+          playbackState.isKidsMode
+            ? 'bg-gradient-to-r from-yellow-500/15 via-amber-500/10 to-stone-900 border-yellow-400/40 text-yellow-200'
+            : 'bg-stone-900/60 border-stone-800 text-stone-300'
+        }`}
+      >
+        <div className="flex items-center gap-2.5 min-w-0">
+          <div
+            className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 text-lg ${
+              playbackState.isKidsMode
+                ? 'bg-yellow-400/20 text-yellow-300 border border-yellow-400/30 animate-bounce'
+                : 'bg-stone-800 text-stone-400'
+            }`}
+          >
+            🐭
+          </div>
+          <div className="min-w-0">
+            <p className="text-xs font-bold truncate flex items-center gap-1.5">
+              <span>{playbackState.isKidsMode ? 'Modo Niños Activo' : '¿Visitas con niños?'}</span>
+              {playbackState.isKidsMode && (
+                <span className="text-[10px] bg-yellow-400 text-stone-950 font-extrabold px-1.5 py-0.2 rounded">
+                  VOZ MIKI
+                </span>
+              )}
+            </p>
+            <p className="text-[10px] text-stone-400 truncate">
+              {playbackState.isKidsMode
+                ? 'Aventura divertida con voz estilo Miki, piratas y cascadas'
+                : 'Activa la audioguía infantil con voz de dibujos animados'}
+            </p>
+          </div>
+        </div>
+
+        <button
+          onClick={() => audioEngine.toggleKidsMode(null, language)}
+          className={`py-1.5 px-3 rounded-xl text-xs font-bold shrink-0 transition-all ${
+            playbackState.isKidsMode
+              ? 'bg-yellow-400 text-stone-950 hover:bg-yellow-300 shadow-md shadow-yellow-500/20'
+              : 'bg-stone-800 hover:bg-stone-750 text-amber-300 border border-stone-700'
+          }`}
+        >
+          {playbackState.isKidsMode ? 'Desactivar' : 'Activar Miki'}
+        </button>
+      </div>
+
       {/* Can Marca Vision Guide Banner */}
       <div
         onClick={onOpenVisionGuide}
@@ -179,6 +228,10 @@ export const RouteOverview: React.FC<RouteOverviewProps> = ({
           const isVisited = visitedPointIds.includes(point.id);
           const isPlayingThis = isCurrent && playbackState.isPlaying;
           const translation = point.translations[language] || point.translations.es;
+          const kidData = KIDS_TOUR_DATA[point.id];
+          const kidTranslation = (kidData && (kidData[language] || kidData['es'])) || null;
+          const pointTitle = playbackState.isKidsMode && kidTranslation ? kidTranslation.title : translation.title;
+          const pointSubtitle = playbackState.isKidsMode && kidTranslation ? kidTranslation.subtitle : translation.subtitle;
 
           return (
             <div
@@ -259,22 +312,26 @@ export const RouteOverview: React.FC<RouteOverviewProps> = ({
                   <h3
                     className={`text-sm font-bold truncate flex items-center gap-1.5 ${
                       isPlayingThis
-                        ? 'text-amber-400'
+                        ? playbackState.isKidsMode ? 'text-yellow-300' : 'text-amber-400'
                         : isCurrent
-                        ? 'text-amber-300'
+                        ? playbackState.isKidsMode ? 'text-yellow-200' : 'text-amber-300'
                         : 'text-stone-100'
                     }`}
                   >
-                    <span>{translation.title}</span>
+                    <span>{pointTitle}</span>
                     {isPlayingThis && (
-                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 font-sans font-normal animate-pulse">
-                        Reproduciendo
+                      <span className={`text-[10px] px-1.5 py-0.5 rounded font-sans font-normal animate-pulse ${
+                        playbackState.isKidsMode
+                          ? 'bg-yellow-400/20 text-yellow-300 border border-yellow-400/30'
+                          : 'bg-amber-500/20 text-amber-300'
+                      }`}>
+                        {playbackState.isKidsMode ? '🐭 Miki Habla' : 'Reproduciendo'}
                       </span>
                     )}
                   </h3>
 
                   <p className="text-xs text-stone-400 truncate mt-0.5">
-                    {translation.subtitle}
+                    {pointSubtitle}
                   </p>
                 </div>
 

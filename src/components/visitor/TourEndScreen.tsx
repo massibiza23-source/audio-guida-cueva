@@ -9,6 +9,7 @@ interface TourEndScreenProps {
   onRestartTour: () => void;
   onOpenLanguageModal: () => void;
   totalPoints: number;
+  isKidsMode?: boolean;
 }
 
 export const TourEndScreen: React.FC<TourEndScreenProps> = ({
@@ -16,6 +17,7 @@ export const TourEndScreen: React.FC<TourEndScreenProps> = ({
   onRestartTour,
   onOpenLanguageModal,
   totalPoints,
+  isKidsMode = false,
 }) => {
   useEffect(() => {
     // Launch celebratory confetti
@@ -209,6 +211,23 @@ export const TourEndScreen: React.FC<TourEndScreenProps> = ({
           <p className="text-sm font-medium text-amber-400">{text.subtitle}</p>
           <p className="text-xs text-stone-400">{text.completedMsg}</p>
         </div>
+
+        {/* Official Miki Kids Explorer Diploma */}
+        {isKidsMode && (
+          <div className="bg-gradient-to-r from-yellow-500/20 via-amber-500/15 to-yellow-500/20 border-2 border-yellow-400/60 rounded-3xl p-5 text-center space-y-3 shadow-2xl shadow-yellow-500/15 animate-in fade-in">
+            <div className="text-4xl animate-bounce">🐭🏅</div>
+            <h3 className="text-lg font-bold text-yellow-300 font-serif">
+              ¡DIPLOMA OFICIAL DE PEQUEÑO EXPLORADOR!
+            </h3>
+            <p className="text-xs text-yellow-100/90 leading-relaxed">
+              ¡Felicidades, valiente aventurero! Has explorado las 10 salas secretas de la Cueva de Can Marçà y descubierto todos los secretos de los piratas, los fósiles y la cascada mágica junto a Miki.
+            </p>
+            <div className="pt-2 border-t border-yellow-400/30 flex items-center justify-between text-[11px] text-yellow-300 font-mono">
+              <span>Can Marçà • Ibiza</span>
+              <span className="font-bold">Firmado: Miki el Explorador 🐭</span>
+            </div>
+          </div>
+        )}
 
         {/* Certificate Card */}
         <div className="bg-stone-900/90 border border-stone-800 rounded-2xl p-4 text-left space-y-3 shadow-xl">
